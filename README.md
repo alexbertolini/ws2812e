@@ -9,13 +9,9 @@ A rotating set of animated lighting patterns for a WS2812E addressable LED strip
 | ESP32-S3 dev board | This project was built and tested on a SparkleIoT XH-S3E module (ESP32-S3-WROOM-1 based), on a generic DevKitC-1-style breakout. Any ESP32-S3 board works. |
 | WS2812E addressable RGB LED strip | 300 LEDs in this build. WS2812E shares the same protocol/timing as WS2812B, so any WS2812B-compatible code and library works. |
 | 5V power supply | Sized for your LED count — each LED can draw up to ~60mA at full white, so budget accordingly (a 300-LED strip can draw several amps at high brightness). |
-| 74AHCT125 logic level shifter | Converts the ESP32's 3.3V data signal to a clean 5V signal for the strip. Strongly recommended — see "Why the level shifter" below. |
-| Resistor, 330–470 ohm | In series on the data line, placed after the level shifter's output, right before the strip's data input. |
+| 74AHCT125 logic level shifter (optional) | Converts the ESP32's 3.3V data signal to a clean 5V signal for the strip. Strongly recommended — see "Why the level shifter" below. |
+| Resistor, 330–470 ohm (optional) | In series on the data line, placed after the level shifter's output, right before the strip's data input. |
 | Timer socket (optional) | Used upstream of the 5V power adapter (on the AC side) to turn the whole thing on/off on a schedule. Cutting power this way is safe — there's no persistent storage being written during operation, so the board just restarts cleanly from `setup()` when power returns. |
-
-## Wiring diagram
-
-See [`wiring-diagram.svg`](./wiring-diagram.svg) in this repo.
 
 Summary:
 
@@ -70,12 +66,4 @@ Per-pattern tuning (inside each pattern function):
 
 Patterns rotate automatically in this order; reorder or remove entries from the `switch` statement in `loop()` to customize the sequence.
 
-## Power cycling / timer socket
 
-This sketch keeps no state across power cycles (no flash writes, no EEPROM), so switching power off and on via a timer socket on the AC side is safe and equivalent to a normal unplug/replug. On power-up, the board simply restarts and begins again from pattern 0.
-
-## Safety notes
-
-- Power the strip from a supply sized for its full length at your chosen brightness; don't rely on the ESP32's onboard regulator or USB port to drive the LEDs directly.
-- Double-check polarity before wiring external 5V into the board's 5V pin — reversed polarity can damage the board (USB-C power is protected against this, direct pin wiring is not).
-- Keep the data wire between the ESP32 and the level shifter short, and the shifted 5V data wire to the strip reasonably short as well, to preserve signal integrity.
